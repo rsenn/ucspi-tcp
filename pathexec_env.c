@@ -8,7 +8,7 @@
 static stralloc plus;
 static stralloc tmp;
 
-int pathexec_env(char *s,char *t)
+int pathexec_env(const char *s,const char *t)
 {
   if (!s) return 1;
   if (!stralloc_copys(&tmp,s)) return 0;
@@ -22,7 +22,6 @@ int pathexec_env(char *s,char *t)
 
 void pathexec(char **argv)
 {
-  char *path;
   char **e;
   unsigned int elen;
   unsigned int i;

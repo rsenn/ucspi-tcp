@@ -2,10 +2,11 @@
 DNS should have used LZ77 instead of its own sophomoric compression algorithm.
 */
 
-#include "error.h"
+#include <errno.h>
 #include "dns.h"
+#include "error.h"
 
-unsigned int dns_packet_copy(char *buf,unsigned int len,unsigned int pos,char *out,unsigned int outlen)
+unsigned int dns_packet_copy(const char *buf,unsigned int len,unsigned int pos,char *out,unsigned int outlen)
 {
   while (outlen) {
     if (pos >= len) { errno = error_proto; return 0; }
@@ -15,7 +16,7 @@ unsigned int dns_packet_copy(char *buf,unsigned int len,unsigned int pos,char *o
   return pos;
 }
 
-unsigned int dns_packet_skipname(char *buf,unsigned int len,unsigned int pos)
+unsigned int dns_packet_skipname(const char *buf,unsigned int len,unsigned int pos)
 {
   unsigned char ch;
 
@@ -32,7 +33,7 @@ unsigned int dns_packet_skipname(char *buf,unsigned int len,unsigned int pos)
   return 0;
 }
 
-unsigned int dns_packet_getname(char *buf,unsigned int len,unsigned int pos,char **d)
+unsigned int dns_packet_getname(const char *buf,unsigned int len,unsigned int pos,char **d)
 {
   unsigned int loop = 0;
   unsigned int state = 0;

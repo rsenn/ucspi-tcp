@@ -123,8 +123,15 @@ main(int argc,char **argv)
     }
     line.len = len; /* for die_bad() */
 
-    colon = byte_chr(x,len,':');
-    if (colon == len) continue;
+    colon = 0;
+    for (;;) {
+      int tmp;
+      tmp = byte_chr(x + colon,len - colon,':');
+      colon += tmp;
+      if (colon == len) continue;
+      if (byte_equal(x+colon+1,4,"deny") || byte_equal(x+colon+1,5,"allow")) break;
+      ++colon;
+    }
 
     if (!stralloc_copyb(&address,x,colon)) nomem();
     if (!stralloc_copys(&data,"")) nomem();

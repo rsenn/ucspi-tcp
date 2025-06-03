@@ -57,6 +57,8 @@ int uid;
 int gid;
 int mode;
 {
+  unsigned len = strlen(file);
+  char buf[len+1+4];
   int fdin;
   int fdout;
 
@@ -73,25 +75,30 @@ int mode;
   if (chdir(subdir) == -1)
     strerr_die6sys(111,FATAL,"unable to switch to ",home,"/",subdir,": ");
 
-  fdout = open_trunc(file);
+  strcpy(buf,file);
+  strcpy(&buf[len],".new");
+  fdout = open_trunc(buf);
   if (fdout == -1)
-    strerr_die6sys(111,FATAL,"unable to write .../",subdir,"/",file,": ");
+    strerr_die6sys(111,FATAL,"unable to write .../",subdir,"/",buf,": ");
   buffer_init(&ssout,write,fdout,outbuf,sizeof outbuf);
 
   switch(buffer_copy(&ssout,&ssin)) {
     case -2:
-      strerr_die4sys(111,FATAL,"unable to read ",file,": ");
+      strerr_die4sys(111,FATAL,"unable to read ",buf,": ");
     case -3:
-      strerr_die6sys(111,FATAL,"unable to write .../",subdir,"/",file,": ");
+      strerr_die6sys(111,FATAL,"unable to write .../",subdir,"/",buf,": ");
   }
 
   close(fdin);
   if (buffer_flush(&ssout) == -1)
-    strerr_die6sys(111,FATAL,"unable to write .../",subdir,"/",file,": ");
+    strerr_die6sys(111,FATAL,"unable to write .../",subdir,"/",buf,": ");
   if (fsync(fdout) == -1)
-    strerr_die6sys(111,FATAL,"unable to write .../",subdir,"/",file,": ");
+    strerr_die6sys(111,FATAL,"unable to write .../",subdir,"/",buf,": ");
   if (close(fdout) == -1) /* NFS silliness */
-    strerr_die6sys(111,FATAL,"unable to write .../",subdir,"/",file,": ");
+    strerr_die6sys(111,FATAL,"unable to write .../",subdir,"/",buf,": ");
+
+  unlink(file);
+  rename(buf,file);
 
   if (chown(file,uid,gid) == -1)
     strerr_die6sys(111,FATAL,"unable to chown .../",subdir,"/",file,": ");

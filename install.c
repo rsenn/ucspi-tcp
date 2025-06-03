@@ -57,7 +57,7 @@ int uid;
 int gid;
 int mode;
 {
-  size_t len = strlen(file);
+  unsigned len = strlen(file);
   char buf[len+1+4];
   int fdin;
   int fdout;
